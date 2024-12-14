@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub User Finder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            width: 100%;
+            padding: 1rem;
+            background-color: #24292e;
+            color: white;
+            text-align: center;
+        }
+
+        .search-container {
+            margin: 2rem 0;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .search-container input {
+            padding: 0.5rem;
+            font-size: 1rem;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .search-container button {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            background-color: #0366d6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .search-container button:hover {
+            background-color: #0356b6;
+        }
+
+        .user-container {
+            width: 90%;
+            max-width: 500px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: none;
+            margin-bottom: 2rem;
+        }
+
+        .user-header {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .user-header img {
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            margin-right: 1rem;
+        }
+
+        .user-info h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .user-info p {
+            margin: 0.5rem 0;
+            color: #555;
+        }
+
+        .user-stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 1rem;
+            background-color: #f9f9f9;
+        }
+
+        .user-stats div {
+            text-align: center;
+        }
+
+        .user-stats div span {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>GitHub User Finder</h1>
+    </header>
+
+    <div class="search-container">
+        <input type="text" id="username" placeholder="Enter GitHub username">
+        <button onclick="findUser()">Search</button>
+    </div>
+
+    <div class="user-container" id="user-container">
+        <div class="user-header">
+            <img id="user-avatar" src="" alt="User Avatar">
+            <div class="user-info">
+                <h2 id="user-name"></h2>
+                <p id="user-bio"></p>
+            </div>
+        </div>
+        <div class="user-stats">
+            <div>
+                <span id="user-repos">0</span>
+                Repositories
+            </div>
+            <div>
+                <span id="user-followers">0</span>
+                Followers
+            </div>
+            <div>
+                <span id="user-following">0</span>
+                Following
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function findUser() {
+            const username = document.getElementById('username').value;
+            const userContainer = document.getElementById('user-container');
+            
+            if (!username) {
+                alert('Please enter a GitHub username!');
+                return;
+            }
+
+            try {
+                const response = await fetch(`https://api.github.com/users/${username}`);
+
+                if (!response.ok) {
+                    throw new Error('User not found');
+                }
+
+                const data = await response.json();
+
+                document.getElementById('user-avatar').src = data.avatar_url;
+                document.getElementById('user-name').textContent = data.name || data.login;
+                document.getElementById('user-bio').textContent = data.bio || 'No bio available';
+                document.getElementById('user-repos').textContent = data.public_repos;
+                document.getElementById('user-followers').textContent = data.followers;
+                document.getElementById('user-following').textContent = data.following;
+
+                userContainer.style.display = 'block';
+            } catch (error) {
+                alert(error.message);
+                userContainer.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
